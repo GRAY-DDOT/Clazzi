@@ -1,11 +1,14 @@
 package com.example.clazzi
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -15,6 +18,7 @@ import com.example.clazzi.ui.screens.CreateVoteScreen
 import com.example.clazzi.ui.screens.VoteListScreen
 import com.example.clazzi.ui.screens.VoteScreen
 import com.example.clazzi.ui.theme.ClazziTheme
+import com.example.clazzi.viewmodel.VoteListViewModel
 
 //@OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -27,37 +31,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ClazziTheme {
                 val navController = rememberNavController()
-                val voteList = remember {
-                    mutableStateListOf<Vote>(
-                        Vote(
-                            id = "1",
-                            title = "오늘 점심 뭐먹지?",
-                            options = listOf(
-                                VoteOption(id = "1", optionText = "짜장면"),
-                                VoteOption(id = "2", optionText = "짬뽕"),
-                                VoteOption(id = "3", optionText = "탕수육"),
-                            )
-                        ),
-                        Vote(
-                            id = "2",
-                            title = "오늘 회식 어디?",
-                            options = listOf(
-                                VoteOption(id = "1", optionText = "비어킹"),
-                                VoteOption(id = "2", optionText = "야시장"),
-                                VoteOption(id = "3", optionText = "멕시칸"),
-                            )
-                        ),
-                        Vote(
-                            id = "3",
-                            title = "오늘 점심 뭐먹지?",
-                            options = listOf(
-                                VoteOption(id = "1", optionText = "짜장면"),
-                                VoteOption(id = "2", optionText = "짬뽕"),
-                                VoteOption(id = "3", optionText = "탕수육"),
-                            )
-                        ),
-                    )
-                }
+                val voteListViewModel: VoteListViewModel = viewModel<VoteListViewModel>()
                 NavHost(
                     navController = navController,
                     startDestination = "voteList"
@@ -65,7 +39,7 @@ class MainActivity : ComponentActivity() {
                     composable(route = "voteList") {
                         VoteListScreen(
                             navController = navController,
-                            voteList = voteList,
+                            viewModel = voteListViewModel,
                             onVoteClicked = { voteId ->
                                 navController.navigate("vote/$voteId")
                             }
@@ -75,20 +49,23 @@ class MainActivity : ComponentActivity() {
                         route = "vote/{voteId}"
                     ) { backStackEntry ->
                         val voteId = backStackEntry.arguments?.getString("voteId") ?: ""
-                        VoteScreen(
-                            navController = navController,
-                            vote = voteList.first { vote ->
-                                vote.id == voteId
-                            },
-                        )
+                        val vote:Vote? = voteListViewModel.getVoteById(voteId)
+                        if(vote != null) {
+                            VoteScreen(
+                                vote = vote,
+                                navController = navController
+                            )
+                        }
+                        else {
+                            val context = LocalContext.current
+                            Toast.makeText(context, "투표를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+                        }
                     }
 
                     composable("createVote") {
                         CreateVoteScreen(
-                            onVoteCreated = { vote ->
-                                navController.popBackStack() // 뒤로 가기
-                                voteList.add(vote)
-                            }
+                            viewModel = voteListViewModel,
+                            navController = navController
                         )
                     }
                 }

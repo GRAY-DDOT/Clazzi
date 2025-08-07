@@ -30,16 +30,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.clazzi.model.Vote
 import com.example.clazzi.model.VoteOption
+import com.example.clazzi.viewmodel.VoteListViewModel
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateVoteScreen(onVoteCreated: (Vote) -> Unit) {
+fun CreateVoteScreen(
+    viewModel: VoteListViewModel,
+    navController: NavController,
+//    onVoteCreated: (Vote) -> Unit
+) {
     val options = remember { mutableStateListOf<String>("", "") }
     val (title, setTitle) = remember { mutableStateOf("") }
-    val optionText = remember { mutableStateListOf<String>("항목1", "항목2") }
+//    val optionText = remember { mutableStateListOf<String>("항목1", "항목2") }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -108,8 +114,10 @@ fun CreateVoteScreen(onVoteCreated: (Vote) -> Unit) {
                                 )
                             }
                     )
-                    onVoteCreated(newVote)
+//                    onVoteCreated(newVote)
 
+                    viewModel.addVote(newVote)
+                    navController.popBackStack()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) { Text("투표 생성") }

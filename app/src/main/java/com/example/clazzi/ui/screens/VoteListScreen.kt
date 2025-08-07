@@ -18,24 +18,28 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.clazzi.model.Vote
 import com.example.clazzi.model.VoteOption
 import com.example.clazzi.ui.theme.ClazziTheme
+import com.example.clazzi.viewmodel.VoteListViewModel
 import kotlin.collections.listOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VoteListScreen(
     navController: NavController,
-    voteList: List<Vote>,
+    viewModel: VoteListViewModel,
     onVoteClicked: (String) -> Unit
 ) {
-
+    val voteList by viewModel.voteList.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -90,30 +94,8 @@ fun VoteListScreenPreview() {
     ClazziTheme {
         VoteListScreen(
             navController = NavController(LocalContext.current),
-            listOf(
-                Vote(
-                    id = "1", title = "오늘 점심 뭐먹지?", options = listOf(
-                        VoteOption(id = "1", optionText = "짜장면"),
-                        VoteOption(id = "2", optionText = "짬뽕"),
-                        VoteOption(id = "3", optionText = "탕수육"),
-                    )
-                ),
-                Vote(
-                    id = "2", title = "오늘 회식 어디?", options = listOf(
-                        VoteOption(id = "1", optionText = "비어킹"),
-                        VoteOption(id = "2", optionText = "야시장"),
-                        VoteOption(id = "3", optionText = "멕시칸"),
-                    )
-                ),
-                Vote(
-                    id = "3", title = "오늘 점심 뭐먹지?", options = listOf(
-                        VoteOption(id = "1", optionText = "짜장면"),
-                        VoteOption(id = "2", optionText = "짬뽕"),
-                        VoteOption(id = "3", optionText = "탕수육"),
-                    )
-                ),
-            ),
-            onVoteClicked = {/*TODO*/}
+            viewModel = viewModel(),
+            onVoteClicked = {}
         )
     }
 }
