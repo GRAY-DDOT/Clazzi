@@ -1,12 +1,20 @@
 package com.example.clazzi.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.clazzi.model.Vote
 import com.example.clazzi.model.VoteOption
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class VoteListViewModel : ViewModel() {
+    val db = Firebase.firestore
+
     private val _voteList = MutableStateFlow<List<Vote>>(emptyList())
     val voteList: StateFlow<List<Vote>> = _voteList
 
@@ -15,10 +23,24 @@ class VoteListViewModel : ViewModel() {
     }
 
     fun addVote(vote: Vote) {
-        _voteList.value = _voteList.value + vote
+        viewModelScope.launch {
+
+            try {
+                db.collection("votes")
+                    .document(vote.id)
+                    .set(vote)
+                    .await()
+//                db.collection("votes")
+//                    .add(vote)
+            } catch (e: Exception) {
+                Log.e("Firebase", "Error adding vote", e)
+            }
+        }
+
+
     }
 
-    init {
+    /*init {
         _voteList.value = listOf(
             Vote(
                 id = "1",
@@ -49,5 +71,17 @@ class VoteListViewModel : ViewModel() {
             ),
         )
 
+    }*/
+    init {
+        db.collection("votes")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    // 오류 처리
+                    return@addSnapshotListener
+                }
+                if (snapshot != null) {
+                    _voteList.value = snapshot.toObjects(Vote::class.java)
+                }
+            }
     }
 }

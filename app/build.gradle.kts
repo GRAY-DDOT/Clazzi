@@ -41,10 +41,12 @@ android {
 }
 
 dependencies {
-    implementation(libs.firebase.bom)
-    implementation(libs.firebase.analytics)
+//    implementation(platform("com.google.firebase:firebase-bom:32.7.0")) // BOM 버전은 최신으로 유지하세요.
+    implementation("com.google.firebase:firebase-firestore-ktx:24.10.0") // 파이어베이스 Firestore 데이타베이스 라이브러리
+//    implementation(libs.firebase.analytics)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.navigation.compose)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

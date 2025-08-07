@@ -1,15 +1,24 @@
 package com.example.clazzi.model
 
-data class Vote(
-    val id: String,
-    val title: String,
-    val options: List<VoteOption>,
-)
+import java.util.Date
 
-data class VoteOption (
-    val id: String,
-    val optionText: String,
-)
+data class Vote(
+    val id: String = "",
+    val title: String = "",
+    val createAt: Date? = null,
+    val options: List<VoteOption> = emptyList(),
+) {
+    val optionCount: Int get() = options.size
+
+}
+
+data class VoteOption(
+    val id: String = "",
+    val optionText: String = "",
+    val voters: List<String> = emptyList()
+) {
+    val voterCount: Int get() = voters.size
+}
 
 //val voteList = listOf(
 //    Vote(
