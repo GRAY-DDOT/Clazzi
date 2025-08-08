@@ -1,5 +1,6 @@
 package com.example.clazzi.ui.screens
 
+import android.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -24,26 +25,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.clazzi.model.Vote
-import com.example.clazzi.model.VoteOption
-import com.example.clazzi.ui.theme.ClazziTheme
+import com.example.clazzi.viewmodel.VoteListViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import java.util.UUID
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,10 +53,11 @@ import com.example.clazzi.ui.theme.ClazziTheme
 fun VoteScreen(
     vote: Vote,
     navController: NavController,
+    viewModel: VoteListViewModel
 ) {
-
-
-    var selectedOption by remember { mutableStateOf(0) }
+    var selectOption: Int by remember { mutableStateOf(0) }
+    var hasVoted: Boolean by remember { mutableStateOf(false) }
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
 
 
     Scaffold(
@@ -117,7 +120,7 @@ fun VoteScreen(
             )
             Spacer(Modifier.height((20.dp)))
             Image(
-                painter = painterResource(id = android.R.drawable.ic_menu_gallery),
+                painter = painterResource(id = R.drawable.ic_menu_gallery),
                 contentDescription = "투표 사진",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -130,10 +133,10 @@ fun VoteScreen(
             vote.options.forEachIndexed { index, option ->
                 Button(
                     onClick = {
-                        selectedOption = index
+                        selectOption = index
                     },
                     colors = ButtonDefaults.buttonColors(
-                        if (selectedOption == index) Color(0xFF13F8A5)
+                        if (selectOption == index) Color(0xFF13F8A5)
                         else Color.LightGray.copy(alpha = 0.5f)
                     ),
                     modifier = Modifier
@@ -150,12 +153,38 @@ fun VoteScreen(
             }
             Spacer(Modifier.height(20.dp))
             Button(
-                onClick = {}
-            ) { Text("투표 하기")}
+                onClick = {
+                    if (!hasVoted) {
+                        coroutineScope.launch {
+                            val voterId = UUID.randomUUID().toString()
+
+                            val selectedOption = vote.options[selectOption]
+
+                            val updatedOption = selectedOption.copy(
+                                voters = selectedOption.voters + voterId
+                            )
+
+                            val updatedOptions = vote.options.mapIndexed { index, option ->
+                                if (index == selectOption) updatedOption else option
+                            }
+
+                            val updatedVote = vote.copy(
+                                options = updatedOptions
+                            )
+
+                            viewModel.setVote(updatedVote)
+                            hasVoted = true
+                        }
+                    }
+                },
+                enabled = !hasVoted,
+                modifier = Modifier.width(200.dp),
+            ) { Text("투표 하기") }
         }
     }
 }
 
+/*
 @Composable
 @Preview(showBackground = true)
 fun VoteScreenPreview() {
@@ -173,4 +202,4 @@ fun VoteScreenPreview() {
             )
         )
     }
-}
+}*/

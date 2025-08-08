@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.clazzi.model.Vote
 import com.example.clazzi.model.VoteOption
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,10 +27,23 @@ class VoteListViewModel : ViewModel() {
         viewModelScope.launch {
 
             try {
+
+                val votMap = hashMapOf(
+                    "id" to vote.id,
+                    "title" to vote.title,
+                    "createAt" to FieldValue.serverTimestamp(),
+                    "options" to vote.options.map {
+                        hashMapOf(
+                            "id" to it.id,
+                            "optionText" to it.optionText,
+                        )
+                    }
+                )
                 db.collection("votes")
                     .document(vote.id)
                     .set(vote)
                     .await()
+                Log.d("Firebase", "Vote added successfully")
 //                db.collection("votes")
 //                    .add(vote)
             } catch (e: Exception) {
@@ -38,6 +52,20 @@ class VoteListViewModel : ViewModel() {
         }
 
 
+    }
+
+    fun setVote(vote: Vote) {
+        viewModelScope.launch {
+            try {
+                db.collection("votes")
+                    .document(vote.id)
+                    .set(vote)
+                    .await()
+                Log.d("Firebase", "Vote updating successfully")
+            } catch (e: Exception) {
+                Log.e("Firebase", "Error updating vote", e)
+            }
+        }
     }
 
     /*init {

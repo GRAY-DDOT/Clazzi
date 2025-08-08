@@ -1,19 +1,23 @@
 package com.example.clazzi.ui.screens
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -22,15 +26,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.clazzi.R
 import com.example.clazzi.model.Vote
-import com.example.clazzi.model.VoteOption
 import com.example.clazzi.ui.theme.ClazziTheme
+import com.example.clazzi.util.formatDate
 import com.example.clazzi.viewmodel.VoteListViewModel
-import kotlin.collections.listOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +50,19 @@ fun VoteListScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("투표 목록") }
+                title = { Text(stringResource(R.string.vote_list_title)) },
+                actions = {
+                    IconButton(
+                        onClick = {
+
+                        }
+                    ){
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "마이페이지"
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -67,22 +84,49 @@ fun VoteListScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             items(voteList) { vote ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable {
-                            onVoteClicked(vote.id)
-//                            navController.navigate("vote")
-                        },
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                    ) {
-                        Text(vote.title)
-                    }
-                }
+//                VoteItem(vote, onVoteClicked)
+                // 두 가지 결과 같음
+                VoteItem(vote) { voteId: String ->
+                    onVoteClicked(voteId) // 콜백으로 넘기기 때문에 it이 필요함
 
+                }
+                /*
+                * VoteItem(vote) {
+                *     onVoteClicked(it)
+                * }
+                * //it : vote.id
+                * // 중괄호 블럭이 함수임
+                * // 매개 변수가 voteID : String
+                * // 매개 변수가 1개인 경우 it 으로 대체 가능
+                * //
+                * */
             }
+        }
+    }
+}
+
+@Composable
+private fun VoteItem(
+    vote: Vote,
+    onVoteClicked: (String) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable {
+                onVoteClicked(vote.id)
+//                            navController.navigate("vote")
+            },
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+        ) {
+            Text(vote.title, style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "생성일 ${formatDate(vote.createAt)}"
+            )
+            Text("항목 개수: ${vote.optionCount}")
         }
     }
 }

@@ -9,7 +9,6 @@ data class Vote(
     val options: List<VoteOption> = emptyList(),
 ) {
     val optionCount: Int get() = options.size
-
 }
 
 data class VoteOption(

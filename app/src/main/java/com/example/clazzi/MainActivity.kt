@@ -5,7 +5,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -13,12 +13,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.clazzi.model.Vote
-import com.example.clazzi.model.VoteOption
+import com.example.clazzi.ui.screens.AuthScreen
 import com.example.clazzi.ui.screens.CreateVoteScreen
 import com.example.clazzi.ui.screens.VoteListScreen
 import com.example.clazzi.ui.screens.VoteScreen
 import com.example.clazzi.ui.theme.ClazziTheme
 import com.example.clazzi.viewmodel.VoteListViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 //@OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -32,10 +33,16 @@ class MainActivity : ComponentActivity() {
             ClazziTheme {
                 val navController = rememberNavController()
                 val voteListViewModel: VoteListViewModel = viewModel<VoteListViewModel>()
+                val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
                 NavHost(
                     navController = navController,
-                    startDestination = "voteList"
+                    startDestination = if(!isLoggedIn) "authScreen" else "voteList"
                 ) {
+                    composable(route = "authScreen") {
+                        AuthScreen(
+                            navController = navController
+                        )
+                    }
                     composable(route = "voteList") {
                         VoteListScreen(
                             navController = navController,
@@ -53,7 +60,8 @@ class MainActivity : ComponentActivity() {
                         if(vote != null) {
                             VoteScreen(
                                 vote = vote,
-                                navController = navController
+                                navController = navController,
+                                viewModel = voteListViewModel
                             )
                         }
                         else {
