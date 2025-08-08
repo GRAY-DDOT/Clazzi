@@ -41,6 +41,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.clazzi.model.Vote
 import com.example.clazzi.viewmodel.VoteListViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -120,7 +121,11 @@ fun VoteScreen(
             )
             Spacer(Modifier.height((20.dp)))
             Image(
-                painter = painterResource(id = R.drawable.ic_menu_gallery),
+                painter =
+                    if (vote.imageUrl != null)
+                        rememberAsyncImagePainter(vote.imageUrl)
+                    else
+                        painterResource(id = R.drawable.ic_menu_gallery),
                 contentDescription = "투표 사진",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

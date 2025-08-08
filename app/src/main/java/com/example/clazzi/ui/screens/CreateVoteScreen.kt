@@ -37,11 +37,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.clazzi.model.Vote
 import com.example.clazzi.model.VoteOption
+import com.example.clazzi.ui.components.CameraPickerWithPermission
 import com.example.clazzi.ui.components.ImagePickerWithPermission
 import com.example.clazzi.viewmodel.VoteListViewModel
 import java.util.UUID
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +59,10 @@ fun CreateVoteScreen(
 
     var showImagePickTypeSheet by remember { mutableStateOf(false) }
     var showImagePicker by remember { mutableStateOf(false) }
+    var showCameraPicker by remember { mutableStateOf(false) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -82,7 +88,11 @@ fun CreateVoteScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Image(
-                painter = painterResource(id = android.R.drawable.ic_menu_gallery),
+                painter =
+                    if (imageUri != null)
+                        rememberAsyncImagePainter(imageUri)
+                    else
+                        painterResource(id = android.R.drawable.ic_menu_gallery),
                 contentDescription = "투표 사진",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -105,6 +115,7 @@ fun CreateVoteScreen(
                         },
                         modifier = Modifier.clickable {
                             showImagePickTypeSheet = false
+                            showCameraPicker = true
                         }
                     )
                     ListItem(
@@ -128,6 +139,15 @@ fun CreateVoteScreen(
                     }
                 )
             }
+            if (showCameraPicker) {
+                CameraPickerWithPermission(
+                    onImageCaptured = { uri ->
+                        imageUri = uri
+                        showCameraPicker = false
+                    }
+                )
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
             Text("투표 항목", style = MaterialTheme.typography.titleMedium)
             options.forEachIndexed { index, option ->
@@ -165,7 +185,7 @@ fun CreateVoteScreen(
                     )
 //                    onVoteCreated(newVote)
 
-                    viewModel.addVote(newVote)
+                    viewModel.addVote(newVote, navController.context, imageUri!!)
                     navController.popBackStack()
                 },
                 modifier = Modifier.fillMaxWidth()

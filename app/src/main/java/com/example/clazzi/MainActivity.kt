@@ -5,8 +5,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -15,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.clazzi.model.Vote
 import com.example.clazzi.ui.screens.AuthScreen
 import com.example.clazzi.ui.screens.CreateVoteScreen
+import com.example.clazzi.ui.screens.MyPageScreen
 import com.example.clazzi.ui.screens.VoteListScreen
 import com.example.clazzi.ui.screens.VoteScreen
 import com.example.clazzi.ui.theme.ClazziTheme
@@ -43,6 +42,12 @@ class MainActivity : ComponentActivity() {
                             navController = navController
                         )
                     }
+                    composable(route = "myPage") {
+                        MyPageScreen(
+                            navController = navController
+                        )
+                    }
+
                     composable(route = "voteList") {
                         VoteListScreen(
                             navController = navController,

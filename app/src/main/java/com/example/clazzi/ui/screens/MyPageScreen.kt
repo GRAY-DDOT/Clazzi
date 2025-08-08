@@ -10,11 +10,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
-fun MyPageScreen(){
+fun MyPageScreen(navController: NavController) {
     val auth = FirebaseAuth.getInstance()
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -29,6 +30,10 @@ fun MyPageScreen(){
             Button(
                 onClick = {
                     auth.signOut()
+                    navController.navigate("auth") {
+                        popUpTo(0) {inclusive = true} // 전체 스택 제거
+                        launchSingleTop = true // 중복 방지
+                    }
                 }
             ){
                 Text("로그아웃")

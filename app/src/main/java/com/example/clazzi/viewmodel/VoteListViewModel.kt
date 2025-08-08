@@ -1,5 +1,7 @@
 package com.example.clazzi.viewmodel
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,11 +9,14 @@ import com.example.clazzi.model.Vote
 import com.example.clazzi.model.VoteOption
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 class VoteListViewModel : ViewModel() {
     val db = Firebase.firestore
@@ -23,14 +28,25 @@ class VoteListViewModel : ViewModel() {
         return voteList.value.find { it.id == voteId }
     }
 
-    fun addVote(vote: Vote) {
+    fun addVote(vote: Vote, context: Context, imageUri: Uri) {
         viewModelScope.launch {
 
             try {
+                val storageRef = FirebaseStorage.getInstance().reference
+                val imageRef = storageRef.child("images/${UUID.randomUUID()}.jpg")
 
-                val votMap = hashMapOf(
+                // 이미지 업로드
+                val inputStream = context.contentResolver.openInputStream(imageUri)
+                val uploadTask = inputStream?.let { imageRef.putStream(it).await() }
+
+                // 다운로드 url 가져오기
+                val downloadUrl = imageRef.downloadUrl.await().toString()
+
+
+                val voteMap = hashMapOf(
                     "id" to vote.id,
                     "title" to vote.title,
+                    "imageUrl" to downloadUrl,
                     "createAt" to FieldValue.serverTimestamp(),
                     "options" to vote.options.map {
                         hashMapOf(
@@ -41,7 +57,7 @@ class VoteListViewModel : ViewModel() {
                 )
                 db.collection("votes")
                     .document(vote.id)
-                    .set(vote)
+                    .set(voteMap)
                     .await()
                 Log.d("Firebase", "Vote added successfully")
 //                db.collection("votes")
@@ -102,6 +118,7 @@ class VoteListViewModel : ViewModel() {
     }*/
     init {
         db.collection("votes")
+            .orderBy("createAt", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     // 오류 처리

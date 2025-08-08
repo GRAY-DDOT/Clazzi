@@ -1,8 +1,11 @@
 package com.example.clazzi.ui.components
 
+import android.content.ContentValues
+import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.AlertDialog
@@ -16,6 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import java.util.jar.Manifest
+import kotlin.contracts.contract
 
 @Composable
 private fun PermissionPickerLauncher(
@@ -38,6 +43,7 @@ private fun PermissionPickerLauncher(
         }
         onResult(isGranted)
     }
+
 
     LaunchedEffect("Unit") {
         if (!launched) {
@@ -83,5 +89,45 @@ fun ImagePickerWithPermission(
         permission = imagePermission,
         rationale = "이미지를 사용하기 위해서는 갤러리 접근 권한이 필요합니다.",
         onLaunchPicker = { galleryLauncher.launch("image/*") }
+    )
+}
+
+
+
+@Composable
+fun CameraPickerWithPermission(
+    onImageCaptured: (Uri?) -> Unit
+) {
+    val context = LocalContext.current
+    var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success : Boolean ->
+        if (success) {
+            onImageCaptured(cameraImageUri)
+        }
+    }
+
+
+    val cameraPermission = android.Manifest.permission.CAMERA
+
+    PermissionPickerLauncher(
+        permission = cameraPermission,
+        rationale = "카메라를 사용하기 위해서는 카메라 권한이 필요합니다.",
+        onLaunchPicker = {
+            cameraImageUri = createImageUri(context)
+            cameraImageUri?.let{ cameraLauncher.launch(cameraImageUri) }
+        }
+    )
+
+}
+fun createImageUri(context: Context): Uri? {
+    val contnetValues = ContentValues().apply {
+        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+        put(MediaStore.Images.Media.DISPLAY_NAME, "vote_${System.currentTimeMillis()}.jpg")
+    }
+    return context.contentResolver.insert(
+        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+        contnetValues
     )
 }
