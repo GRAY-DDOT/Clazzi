@@ -61,18 +61,11 @@ class MainActivity : ComponentActivity() {
                         route = "vote/{voteId}"
                     ) { backStackEntry ->
                         val voteId = backStackEntry.arguments?.getString("voteId") ?: ""
-                        val vote:Vote? = voteListViewModel.getVoteById(voteId)
-                        if(vote != null) {
                             VoteScreen(
-                                vote = vote,
+                                voteId = voteId,
                                 navController = navController,
-                                viewModel = voteListViewModel
+                                voteListViewModel = voteListViewModel
                             )
-                        }
-                        else {
-                            val context = LocalContext.current
-                            Toast.makeText(context, "투표를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
-                        }
                     }
 
                     composable("createVote") {
