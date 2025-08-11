@@ -1,15 +1,27 @@
 {
   "hosting": {
     "public": "public",
+    "appAssociation": "AUTO",
     "ignore": [
       "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+      "/.*",
+      "/node_modules/"
     ],
     "rewrites": [
       {
-        "source": "**",
+        "source": "/vote/",
         "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/.well-known/assetlinks.json",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ]
       }
     ]
   }

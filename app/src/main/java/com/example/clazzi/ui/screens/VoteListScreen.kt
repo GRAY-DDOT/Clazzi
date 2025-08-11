@@ -60,7 +60,7 @@ fun VoteListScreen(
                 actions = {
                     IconButton(
                         onClick = {
-
+                            navController.navigate("myPage")
                         }
                     ) {
                         Icon(
