@@ -1,16 +1,13 @@
 package com.example.clazzi
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.clazzi.model.Vote
 import com.example.clazzi.ui.screens.AuthScreen
 import com.example.clazzi.ui.screens.CreateVoteScreen
 import com.example.clazzi.ui.screens.MyPageScreen
@@ -35,7 +32,7 @@ class MainActivity : ComponentActivity() {
                 val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
                 NavHost(
                     navController = navController,
-                    startDestination = if(!isLoggedIn) "authScreen" else "voteList"
+                    startDestination = if (!isLoggedIn) "authScreen" else "voteList"
                 ) {
                     composable(route = "authScreen") {
                         AuthScreen(
@@ -58,14 +55,21 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(
-                        route = "vote/{voteId}"
+                        route = "vote/{voteId}",
+                        deepLinks = listOf(
+                            androidx.navigation.navDeepLink {
+                                uriPattern = "https://clazzi.com/vote/{voteId}"
+                            }
+
+                        )
                     ) { backStackEntry ->
                         val voteId = backStackEntry.arguments?.getString("voteId") ?: ""
-                            VoteScreen(
-                                voteId = voteId,
-                                navController = navController,
-                                voteListViewModel = voteListViewModel
-                            )
+                        VoteScreen(
+
+                            voteId = voteId,
+                            navController = navController,
+                            voteListViewModel = voteListViewModel
+                        )
                     }
 
                     composable("createVote") {

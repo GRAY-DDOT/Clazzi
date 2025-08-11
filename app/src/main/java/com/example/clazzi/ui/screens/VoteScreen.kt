@@ -1,5 +1,6 @@
 package com.example.clazzi.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -107,6 +109,24 @@ fun VoteScreen(
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "뒤로가기")
                     }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            if (vote != null) {
+                                val voteUrl = "https://clazzi.com/vote/${vote.id}"
+                                // Intent 앱/activity 이동간 전달할 정보를 답는 방법
+                                val sendIntent =  android.content.Intent().apply {
+                                    action = android.content.Intent.ACTION_SEND
+                                    putExtra(android.content.Intent.EXTRA_TEXT, voteUrl)
+                                    type = "text/plain"
+                                }
+                                navController.context.startActivity(Intent.createChooser(sendIntent, "투표 공유"))
+                            }
+                        }
+                    ) {
+                        Icon(Icons.Default.Share, contentDescription = "투표 공유")
+                    }
                 }
             )
         }
@@ -126,7 +146,7 @@ fun VoteScreen(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize(),
-                // 뭔가 해야했음
+                // 뭔가 해야했음 TODO
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
