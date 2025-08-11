@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import com.example.clazzi.ui.screens.AuthScreen
 import com.example.clazzi.ui.screens.CreateVoteScreen
 import com.example.clazzi.ui.screens.MyPageScreen
@@ -57,9 +58,8 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = "vote/{voteId}",
                         deepLinks = listOf(
-                            androidx.navigation.navDeepLink {
-                                uriPattern = "https://clazzi.com/vote/{voteId}"
-                            }
+                            navDeepLink { uriPattern = "clazzi://vote/{voteId}" },
+                            navDeepLink { uriPattern = "https://clazzi.com/vote/{voteId}" }
 
                         )
                     ) { backStackEntry ->

@@ -114,7 +114,7 @@ fun VoteScreen(
                     IconButton(
                         onClick = {
                             if (vote != null) {
-                                val voteUrl = "https://clazzi.com/vote/${vote.id}"
+                                val voteUrl = "https://clazzi-b011c.web.app/vote/${vote.id}"
                                 // Intent 앱/activity 이동간 전달할 정보를 답는 방법
                                 val sendIntent =  android.content.Intent().apply {
                                     action = android.content.Intent.ACTION_SEND
@@ -145,8 +145,8 @@ fun VoteScreen(
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .fillMaxSize(),
-                // 뭔가 해야했음 TODO
+                    .fillMaxSize()
+                    .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -244,23 +244,24 @@ fun VoteScreen(
                                 ) {
                                     Text(
                                         text = option.optionText,
-                                        color = Color.White,
+                                        color = Color.Black,
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier.weight(1f)
-                                    )
-                                    Text(
-                                        text = "${option.voters.size}",
-                                        color = Color.White,
-                                        fontWeight = FontWeight.Bold
                                     )
                                     if (isMyVote) {
                                         Icon(
                                             imageVector = Icons.Default.Check,
                                             contentDescription = "내가 투표한 항목",
-                                            tint = Color(0xFF13F8A5),
+                                            tint = Color.Black,
                                             modifier = Modifier.padding(start = 8.dp)
                                         )
                                     }
+                                    Text(
+                                        text = "${option.voters.size}",
+                                        color = Color.Black,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
 
                                 }
 
