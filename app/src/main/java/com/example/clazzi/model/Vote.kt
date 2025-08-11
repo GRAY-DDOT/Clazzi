@@ -8,6 +8,7 @@ data class Vote(
     val createAt: Date? = null,
     val imageUrl: String = "",
     val options: List<VoteOption> = emptyList(),
+    val deadline: Date? = null,
 ) {
     val optionCount: Int get() = options.size
 }

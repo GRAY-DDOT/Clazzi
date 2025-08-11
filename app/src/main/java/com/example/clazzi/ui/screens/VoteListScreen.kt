@@ -3,6 +3,7 @@ package com.example.clazzi.ui.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -24,6 +25,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -36,6 +40,8 @@ import com.example.clazzi.model.Vote
 import com.example.clazzi.ui.theme.ClazziTheme
 import com.example.clazzi.util.formatDate
 import com.example.clazzi.viewmodel.VoteListViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +62,7 @@ fun VoteListScreen(
                         onClick = {
 
                         }
-                    ){
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = "마이페이지"
@@ -110,6 +116,13 @@ private fun VoteItem(
     vote: Vote,
     onVoteClicked: (String) -> Unit
 ) {
+    val user: FirebaseUser? = FirebaseAuth.getInstance().currentUser
+    val currentUserId = user?.uid ?: "0"
+
+    var hasVoted: Boolean by remember { mutableStateOf(false) }
+
+
+
     Card(
         modifier = Modifier
             .fillMaxSize()
@@ -118,15 +131,18 @@ private fun VoteItem(
 //                            navController.navigate("vote")
             },
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-        ) {
-            Text(vote.title, style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "생성일 ${formatDate(vote.createAt)}"
-            )
-            Text("항목 개수: ${vote.optionCount}")
+        Row(modifier = Modifier.padding(16.dp)) {
+            Column(
+                modifier = Modifier.weight(weight = 1f)
+            ) {
+                Text(vote.title, style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "생성일 ${formatDate(vote.createAt)}"
+                )
+                Text("항목 개수: ${vote.optionCount}")
+            }
+            Text(if(hasVoted) "투표 완료" else "투표 안함")
         }
     }
 }

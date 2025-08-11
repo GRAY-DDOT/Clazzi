@@ -1,6 +1,5 @@
 package com.example.clazzi.ui.screens
 
-import android.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -127,6 +126,7 @@ fun VoteScreen(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize(),
+                // 뭔가 해야했음
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -169,7 +169,7 @@ fun VoteScreen(
                         if (vote.imageUrl != null)
                             rememberAsyncImagePainter(vote.imageUrl)
                         else
-                            painterResource(id = R.drawable.ic_menu_gallery),
+                            painterResource(id = android.R.drawable.ic_menu_gallery),
                     contentDescription = "투표 사진",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -212,8 +212,8 @@ fun VoteScreen(
                                     .fillMaxWidth()
                                     .padding(vertical = 8.dp)
                                     .background(
-                                        if (isMyVote) Color(0xFF13F8A5).copy(alpha = 0.4f)
-                                        else Color.LightGray.copy(alpha = 0.3f),
+                                        if (isMyVote) Color(0xFF13F8A5).copy(alpha = 0.6f)
+                                        else Color.LightGray.copy(alpha = 0.6f),
                                         shape = RoundedCornerShape(12.dp)
                                     )
                                     .padding(12.dp),
@@ -222,7 +222,7 @@ fun VoteScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.fillMaxWidth(),
                                 ) {
-                                    Text (
+                                    Text(
                                         text = option.optionText,
                                         color = Color.White,
                                         fontWeight = FontWeight.Bold,
@@ -233,7 +233,7 @@ fun VoteScreen(
                                         color = Color.White,
                                         fontWeight = FontWeight.Bold
                                     )
-                                    if(isMyVote) {
+                                    if (isMyVote) {
                                         Icon(
                                             imageVector = Icons.Default.Check,
                                             contentDescription = "내가 투표한 항목",
@@ -241,20 +241,20 @@ fun VoteScreen(
                                             modifier = Modifier.padding(start = 8.dp)
                                         )
                                     }
-                                    Spacer(Modifier.width(4.dp))
-                                    LinearProgressIndicator(
-                                        progress = {percent},
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .height(8.dp)
-                                            .clip(RoundedCornerShape(4.dp)),
-                                        color = Color(0xFF13F8A5),
-                                        trackColor = Color.LightGray.copy(alpha = 0.4f)
 
-                                    )
                                 }
 
+                                Spacer(Modifier.width(4.dp))
+                                LinearProgressIndicator(
+                                    progress = { percent },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(8.dp)
+                                        .clip(RoundedCornerShape(4.dp)),
+                                    color = Color(0xFF13F8A5),
+                                    trackColor = Color.LightGray.copy(alpha = 0.6f)
 
+                                )
                             }
                         }
 
@@ -271,7 +271,7 @@ fun VoteScreen(
                                 val selectedOption = vote.options[selectOption]
 
                                 val updatedOption = selectedOption.copy(
-                                    voters = selectedOption.voters + voterId
+                                    voters = selectedOption.voters + currentUserId
                                 )
 
                                 val updatedOptions = vote.options.mapIndexed { index, option ->
@@ -289,7 +289,12 @@ fun VoteScreen(
                     },
                     enabled = !hasVoted,
                     modifier = Modifier.width(200.dp),
-                ) { Text("투표 하기") }
+                ) {
+                    Text(
+                        if (hasVoted) "투표 완료"
+                        else "투표 하기"
+                    )
+                }
             }
         }
     }
