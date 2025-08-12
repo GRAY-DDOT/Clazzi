@@ -114,7 +114,8 @@ fun VoteScreen(
                     IconButton(
                         onClick = {
                             if (vote != null) {
-                                val voteUrl = "https://clazzi-b011c.web.app/vote/${vote.id}"
+//                                val voteUrl = "https://clazzi-b011c.web.app/vote/${vote.id}"
+                                val voteUrl = "https://clazzi-54344.web.app/vote/${vote.id}"
                                 // Intent 앱/activity 이동간 전달할 정보를 답는 방법
                                 val sendIntent =  android.content.Intent().apply {
                                     action = android.content.Intent.ACTION_SEND

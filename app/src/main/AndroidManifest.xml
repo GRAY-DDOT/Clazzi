@@ -54,8 +54,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
+<!--                <data-->
+<!--                    android:host="https://clazzi-b011c.web.app/"-->
+<!--                    android:pathPrefix="/vote"-->
+<!--                    android:scheme="https" />-->
                 <data
-                    android:host="https://clazzi-b011c.web.app/"
+                    android:host="https://clazzi-54344.web.app/"
                     android:pathPrefix="/vote"
                     android:scheme="https" />
             </intent-filter>

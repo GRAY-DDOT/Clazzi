@@ -59,7 +59,8 @@ class MainActivity : ComponentActivity() {
                         route = "vote/{voteId}",
                         deepLinks = listOf(
                             navDeepLink { uriPattern = "clazzi://vote/{voteId}" },
-                            navDeepLink { uriPattern = "https://clazzi.com/vote/{voteId}" }
+//                            navDeepLink { uriPattern = "https://clazzi-b011c.web.app/vote/{voteId}" }
+                            navDeepLink { uriPattern = "https://clazzi-54344.web.app/vote/{voteId}" }
 
                         )
                     ) { backStackEntry ->
