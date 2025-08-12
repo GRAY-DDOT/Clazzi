@@ -9,6 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
+import com.example.clazzi.repository.RestApiRepository
+import com.example.clazzi.repository.network.ApiClient
 import com.example.clazzi.ui.screens.AuthScreen
 import com.example.clazzi.ui.screens.CreateVoteScreen
 import com.example.clazzi.ui.screens.MyPageScreen
@@ -16,7 +18,11 @@ import com.example.clazzi.ui.screens.VoteListScreen
 import com.example.clazzi.ui.screens.VoteScreen
 import com.example.clazzi.ui.theme.ClazziTheme
 import com.example.clazzi.viewmodel.VoteListViewModel
+import com.example.clazzi.viewmodel.VoteListViewModelFactory
+import com.example.clazzi.viewmodel.VoteViewModel
+import com.example.clazzi.viewmodel.VoteViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
+
 
 //@OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -29,13 +35,25 @@ class MainActivity : ComponentActivity() {
         setContent {
             ClazziTheme {
                 val navController = rememberNavController()
-                val voteListViewModel: VoteListViewModel = viewModel<VoteListViewModel>()
+
+//                val repo = FirebaseVoteRepository()
+
+                val repo = RestApiRepository(ApiClient.voteApiService)
+
+                val voteListViewModel: VoteListViewModel = viewModel(
+                    factory = VoteListViewModelFactory(repo)
+                    )
+
+                val voteViewModel: VoteViewModel = viewModel(
+                    factory = VoteViewModelFactory(repo)
+                )
+
                 val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
                 NavHost(
                     navController = navController,
-                    startDestination = if (!isLoggedIn) "authScreen" else "voteList"
+                    startDestination = if (!isLoggedIn) "auth" else "voteList"
                 ) {
-                    composable(route = "authScreen") {
+                    composable(route = "auth") {
                         AuthScreen(
                             navController = navController
                         )

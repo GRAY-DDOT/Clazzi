@@ -41,7 +41,8 @@ android {
 }
 
 dependencies {
-//    implementation(platform("com.google.firebase:firebase-bom:32.7.0")) // BOM 버전은 최신으로 유지하세요.
+    implementation("com.squareup.retrofit2:retrofit:2.11.0") // Retrofit
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0") // Gson 변환기
     implementation("com.google.firebase:firebase-firestore-ktx:24.10.0") // 파이어베이스 Firestore 데이타베이스 라이브러리
 //    implementation(libs.firebase.analytics)
     implementation(libs.androidx.lifecycle.runtime.compose)

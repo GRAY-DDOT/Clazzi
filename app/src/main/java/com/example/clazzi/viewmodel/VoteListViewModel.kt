@@ -5,16 +5,16 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.clazzi.model.Vote
-import com.example.clazzi.repository.FirebaseVoteRepository
+import com.example.clazzi.repository.VoteRepository
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class VoteListViewModel : ViewModel() {
+class VoteListViewModel(voteRepository: VoteRepository) : ViewModel {
     val db = Firebase.firestore
-    val voteRepository = FirebaseVoteRepository()
+
 
     private val _voteList = MutableStateFlow<List<Vote>>(emptyList())
     val voteList: StateFlow<List<Vote>> = _voteList

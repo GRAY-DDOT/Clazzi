@@ -17,7 +17,7 @@ import kotlinx.coroutines.tasks.await
 import java.util.UUID
 
 
-class FirebaseVoteRepository: VoteRepository {
+class FirebaseVoteRepository : VoteRepository {
     val db = Firebase.firestore
 
 
@@ -28,7 +28,7 @@ class FirebaseVoteRepository: VoteRepository {
                 if (error != null) {
                     Log.e("Firebase", "Error observing votes", error)
                     close(error)
-                } else if( snapshot != null) {
+                } else if (snapshot != null) {
                     val votes = snapshot.toObjects(Vote::class.java)
                     trySend(votes)
                 }
@@ -88,4 +88,35 @@ class FirebaseVoteRepository: VoteRepository {
         }
     }
 
+    override fun observeVoteById(voteId: String): Flow<Vote?> = callbackFlow {
+        /*
+        * Firebase.firestore.collection("votes").document(voteId)
+            // addSnapshotListener => 문서가 변경될 때마다 호출
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    return@addSnapshotListener
+                }
+                if (snapshot != null && snapshot.exists()) {
+                    val vote = snapshot.toObject(Vote::class.java)
+                    _vote.value = vote
+                }
+            }
+
+        * */
+
+
+        val listener: ListenerRegistration = db.collection("votes")
+            .document(voteId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("Firebase", "Error observing vote", error)
+                    close(error)
+                    return@addSnapshotListener
+                } else if (snapshot != null) {
+                    val vote = snapshot.toObject(Vote::class.java)
+                    trySend(vote)
+                }
+            }
+        awaitClose { listener.remove() }
+    }
 }
